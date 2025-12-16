@@ -10,6 +10,16 @@ from .. import db
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
+@router.get("")
+def list_notes() -> List[Dict[str, Any]]:
+    """List all notes."""
+    rows = db.list_notes()
+    return [
+        {"id": row["id"], "content": row["content"], "created_at": row["created_at"]}
+        for row in rows
+    ]
+
+
 @router.post("")
 def create_note(payload: Dict[str, Any]) -> Dict[str, Any]:
     content = str(payload.get("content", "")).strip()
@@ -17,6 +27,8 @@ def create_note(payload: Dict[str, Any]) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="content is required")
     note_id = db.insert_note(content)
     note = db.get_note(note_id)
+    if note is None:
+        raise HTTPException(status_code=500, detail="Failed to retrieve created note")
     return {
         "id": note["id"],
         "content": note["content"],

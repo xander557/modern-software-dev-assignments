@@ -23,16 +23,21 @@
     <textarea id="text" placeholder="Paste notes here...&#10;e.g.&#10;- [ ] Set up database&#10;- Implement extract endpoint"></textarea>
     <div class="row">
       <label class="row"><input id="save_note" type="checkbox" checked /> Save as note</label>
-      <button id="extract">Extract</button>
+      <button id="extract-llm">Extract LLM</button>
+      <button id="list-notes">List Notes</button>
     </div>
 
     <div class="items" id="items"></div>
+    <div class="notes" id="notes" style="margin-top: 2rem;"></div>
 
     <script>
       const $ = (sel) => document.querySelector(sel);
       const itemsEl = $('#items');
-      const btn = $('#extract');
-      btn.addEventListener('click', async () => {
+      const notesEl = $('#notes');
+      
+      // Extract LLM button
+      const extractBtn = $('#extract-llm');
+      extractBtn.addEventListener('click', async () => {
         const text = $('#text').value;
         const save = $('#save_note').checked;
         itemsEl.textContent = 'Extracting...';
@@ -64,6 +69,35 @@
         } catch (err) {
           console.error(err);
           itemsEl.textContent = 'Error extracting items';
+        }
+      });
+
+      // List Notes button
+      const listNotesBtn = $('#list-notes');
+      listNotesBtn.addEventListener('click', async () => {
+        notesEl.textContent = 'Loading notes...';
+        try {
+          const res = await fetch('/notes', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (!res.ok) throw new Error('Request failed');
+          const notes = await res.json();
+          if (!notes || notes.length === 0) {
+            notesEl.innerHTML = '<p class="muted">No notes found.</p>';
+            return;
+          }
+          notesEl.innerHTML = '<h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">All Notes</h2>' +
+            notes.map(note => (
+              `<div style="border: 1px solid #e5e7eb; border-radius: 0.375rem; padding: 0.75rem; margin-bottom: 0.5rem;">
+                <div style="font-weight: 500; margin-bottom: 0.25rem;">Note #${note.id}</div>
+                <div style="white-space: pre-wrap; margin-bottom: 0.25rem;">${note.content}</div>
+                <div class="muted">Created: ${note.created_at}</div>
+              </div>`
+            )).join('');
+        } catch (err) {
+          console.error(err);
+          notesEl.textContent = 'Error loading notes';
         }
       });
 
