@@ -37,3 +37,32 @@ def client() -> Generator[TestClient, None, None]:
         yield c
 
     os.unlink(db_path)
+
+
+@pytest.fixture()
+def test_user(client: TestClient) -> dict:
+    """Create a test user and return credentials."""
+    username = "testuser"
+    password = "testpass123"
+
+    # Register user
+    response = client.post(
+        "/auth/register",
+        json={"username": username, "password": password},
+    )
+    assert response.status_code == 201
+
+    return {"username": username, "password": password, "id": response.json()["id"]}
+
+
+@pytest.fixture()
+def authenticated_client(client: TestClient, test_user: dict) -> TestClient:
+    """Return a client with authentication cookie set."""
+    # Login
+    response = client.post(
+        "/auth/login",
+        data={"username": test_user["username"], "password": test_user["password"]},
+    )
+    assert response.status_code == 200
+
+    return client
