@@ -38,3 +38,26 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["week4/backend/tests", "week5/backend/tests", "week6/backend/tests", "week7/backend/tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+pythonpath = ["."]
+addopts = ["-ra", "--strict-markers", "--showlocals", "--tb=short", "-v"]
+
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "auth: marks tests related to authentication",
+    "notes: marks tests related to notes",
+    "action_items: marks tests related to action items",
+    "service: marks tests for service layer",
+    "api: marks tests for API endpoints",
+]
+
+log_cli = false
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
