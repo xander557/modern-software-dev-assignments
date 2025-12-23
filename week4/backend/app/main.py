@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .db import engine
@@ -15,8 +16,12 @@ app = FastAPI(title="Modern Software Dev Starter (Week 4)")
 # Ensure data dir exists
 Path("data").mkdir(parents=True, exist_ok=True)
 
-# Mount static frontend
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+# Mount static frontend only if not in test mode and directory exists
+ENABLE_STATIC_FILES = os.getenv("ENABLE_STATIC_FILES", "true").lower() == "true"
+FRONTEND_DIR = Path("frontend")
+
+if ENABLE_STATIC_FILES and FRONTEND_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 
 @app.on_event("startup")
@@ -27,8 +32,19 @@ def startup_event() -> None:
 
 
 @app.get("/")
-async def root() -> FileResponse:
-    return FileResponse("frontend/index.html")
+async def root():
+    """Serve the frontend index.html if available, otherwise return API info."""
+    index_path = FRONTEND_DIR / "index.html"
+    if ENABLE_STATIC_FILES and index_path.exists():
+        return FileResponse(str(index_path))
+    return JSONResponse(
+        content={
+            "message": "Modern Software Dev API",
+            "version": "Week 4",
+            "docs": "/docs",
+            "status": "ok",
+        }
+    )
 
 
 # Routers
