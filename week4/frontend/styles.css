@@ -1,8 +1,28 @@
-body{font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;margin:0;padding:0;background:#fafafa;color:#111}
+/* Light mode (default) */
+body{font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;margin:0;padding:0;background:#fafafa;color:#111;transition:background-color 0.3s ease, color 0.3s ease}
 main{max-width:900px;margin:2rem auto;padding:0 1rem}
 h1{font-size:1.8rem}
-section{background:#fff;border:1px solid #eee;border-radius:8px;padding:1rem;margin:1rem 0}
+section{background:#fff;border:1px solid #eee;border-radius:8px;padding:1rem;margin:1rem 0;transition:background-color 0.3s ease, border-color 0.3s ease}
 form{display:flex;gap:.5rem;margin-bottom:.5rem}
-input{flex:1;padding:.5rem;border:1px solid #ccc;border-radius:4px}
-button{padding:.5rem .8rem;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;cursor:pointer}
+input{flex:1;padding:.5rem;border:1px solid #ccc;border-radius:4px;background:#fff;color:#111;transition:background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease}
+button{padding:.5rem .8rem;border:1px solid #ccc;border-radius:4px;background:#f5f5f5;color:#111;cursor:pointer;transition:background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease}
+button:hover{background:#e8e8e8}
 ul{list-style:disc;padding-left:1.25rem}
+
+/* Theme Toggle Button */
+#theme-toggle{position:fixed;top:1rem;right:1rem;z-index:1000;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:1px solid #ccc;background:#f5f5f5;color:#111;cursor:pointer;transition:transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease}
+#theme-toggle:hover{transform:scale(1.05)}
+#theme-toggle:focus{outline:2px solid #111;outline-offset:2px}
+.theme-icon{width:20px;height:20px;stroke:currentColor;transition:opacity 0.3s ease}
+
+/* Dark mode */
+html.dark-mode body{background:#1a1a1a;color:#e5e5e5}
+html.dark-mode section{background:#2d2d2d;border-color:#404040}
+html.dark-mode input{border-color:#555;background:#2d2d2d;color:#e5e5e5}
+html.dark-mode button{border-color:#555;background:#3a3a3a;color:#e5e5e5}
+html.dark-mode button:hover{background:#4a4a4a}
+html.dark-mode #theme-toggle{border-color:#555;background:#3a3a3a;color:#e5e5e5;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+html.dark-mode #theme-toggle:focus{outline-color:#e5e5e5}
+
+/* Reduced Motion Support */
+@media(prefers-reduced-motion:reduce){body,section,input,button,#theme-toggle,.theme-icon{transition:none !important}}
